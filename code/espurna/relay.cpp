@@ -29,6 +29,10 @@ Copyright (C) 2016-2019 by Xose Pérez <xose dot perez at gmail dot com>
 #include "utils.h"
 #include "ws.h"
 
+#if MCP23S17_SUPPORT
+#include "mcp23s17.h"
+#endif
+
 #include "relay_config.h"
 
 struct relay_t {
@@ -264,6 +268,12 @@ void _relayProviderStatus(unsigned char id, bool status) {
 
         Serial.flush();
     #endif
+
+    #if RELAY_PROVIDER == RELAY_PROVIDER_MCP23S17
+		DEBUG_MSG_P(PSTR("[RELAY] [MCP23S17] Set relay %d to %s\n"), id, status ? "ON": "OFF");
+
+		MCP23S17SetRelayState((uint8_t) id, status);
+	#endif
 
     #if RELAY_PROVIDER == RELAY_PROVIDER_LIGHT
 

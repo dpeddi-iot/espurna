@@ -4690,6 +4690,49 @@
     #define RELAY4_TYPE             RELAY_TYPE_NORMAL
 
 // -----------------------------------------------------------------------------
+// Prodino WIFI
+// https://kmpelectronics.eu/products/prodino-wifi-v1/
+// -------------------------------------
+#elif defined(PRODINO_WIFI)
+
+    // Info
+    #define MANUFACTURER        "PRODINO"
+    #define DEVICE              "WIFI"
+
+    // MCP23S17
+    #define MCP23S17_SUPPORT        1
+
+    #define MCP23S17_OPTOIN_COUNT   4
+
+    // Opto input pins
+    #define MCP23S17_IN1PIN         0
+    #define MCP23S17_IN2PIN         1
+    #define MCP23S17_IN3PIN         2
+    #define MCP23S17_IN4PIN         3
+
+    // Relay pins
+    #define MCP23S17_REL1PIN        4
+    #define MCP23S17_REL2PIN        5
+    #define MCP23S17_REL3PIN        6
+    #define MCP23S17_REL4PIN        7
+
+    // Relays
+    #define DUMMY_RELAY_COUNT       4
+    #define RELAY_PROVIDER          RELAY_PROVIDER_MCP23S17
+
+    // Buttons
+    #define BUTTON1_RELAY           1
+    #define BUTTON2_RELAY           2
+    #define BUTTON3_RELAY           2
+    #define BUTTON4_RELAY           1
+
+    #define BUTTON_EVENTS_SOURCE    BUTTON_EVENTS_SOURCE_MCP23S17
+
+    // LEDs
+    #define LED1_PIN            2
+    #define LED1_PIN_INVERSE    1
+
+// -----------------------------------------------------------------------------
 
 #else
 

@@ -679,6 +679,8 @@ int getBoardId() {
         return 156;
     #elif defined(GOSUND_WP3)
         return 157;
+    #elif defined(PRODINO_WIFI)
+        return 158;
     #else
         return -1; // CUSTOM
     #endif

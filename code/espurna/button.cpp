@@ -21,6 +21,9 @@ Copyright (C) 2016-2019 by Xose Pérez <xose dot perez at gmail dot com>
 #include "relay.h"
 #include "light.h"
 #include "ws.h"
+#ifdef MCP23S17_SUPPORT
+#include "mcp23s17.h"
+#endif
 
 #include "button_config.h"
 
@@ -249,6 +252,11 @@ button_event_t button_t::loop() {
 
 std::vector<button_t> _buttons;
 
+#ifdef MCP23S17_SUPPORT
+std::vector<unsigned long> _buttons_lastDebounceTime(MCP23S17_OPTOIN_COUNT,0);
+std::vector<unsigned long> _buttons_debounceDelay(MCP23S17_OPTOIN_COUNT,500);
+#endif
+
 // -----------------------------------------------------------------------------
 
 unsigned char buttonCount() {
@@ -282,7 +290,8 @@ void _buttonWebSocketOnVisible(JsonObject& root) {
 }
 
 #if (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_ITEAD_SONOFF_DUAL) || \
-    (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_FOXEL_LIGHTFOX_DUAL)
+    (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_FOXEL_LIGHTFOX_DUAL) || \
+    (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_MCP23S17)
 
 void _buttonWebSocketOnConnected(JsonObject& root) {
     root["btnRepDel"] = getSetting("btnRepDel", _buttonRepeatDelay());
@@ -612,6 +621,28 @@ void _buttonLoopSonoffDual() {
 
 }
 
+#ifdef MCP23S17_SUPPORT
+void _buttonLoopMcp23s17() {
+
+    for (unsigned int i=0; i<_buttons.size(); i++) {
+        
+        bool buttonState = MCP23S17GetOptoInState(i);
+
+        //filter out any noise by setting a time buffer
+        if ( (millis() - _buttons_lastDebounceTime.at(i)) > _buttons_debounceDelay.at(i)) {
+        
+            //if the button has been pressed, lets toggle the LED from "off to on" or "on to off"
+            if (buttonState) {
+                DEBUG_MSG_P(PSTR("[BUTTON] [MCP23S17] input-: %d\n"), i);
+                buttonEvent(i, button_event_t::Click);
+                _buttons_lastDebounceTime.at(i) = millis();
+            }
+        
+        }//close if(time buffer)
+    }
+}
+#endif
+
 void _buttonLoopGeneric() {
     for (size_t id = 0; id < _buttons.size(); ++id) {
         auto event = _buttons[id].loop();
@@ -628,6 +659,8 @@ void buttonLoop() {
     #elif (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_ITEAD_SONOFF_DUAL) || \
         (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_FOXEL_LIGHTFOX_DUAL)
         _buttonLoopSonoffDual();
+    #elif BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_MCP23S17
+        _buttonLoopMcp23s17();
     #else
         #warning "Unknown value for BUTTON_EVENTS_SOURCE"
     #endif
@@ -641,7 +674,8 @@ void buttonSetup() {
 
     // Special hardware cases
     #if (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_ITEAD_SONOFF_DUAL) || \
-        (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_FOXEL_LIGHTFOX_DUAL)
+        (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_FOXEL_LIGHTFOX_DUAL) || \
+        (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_MCP23S17)
 
         size_t buttons = 0;
         #if BUTTON1_RELAY != RELAY_NONE
