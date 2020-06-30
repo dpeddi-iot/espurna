@@ -12,6 +12,9 @@ Copyright (C) 2016 Plamen Kovandjiev <p.kovandiev@kmpelectronics.eu> & Dimitar A
 
 #if MCP23S17_SUPPORT
 
+#include <bitset>
+
+
 #define MCP23S17_CS 15
 
 #define READ_CMD  0x41
@@ -43,6 +46,25 @@ const int OPTOIN_PINS[MCP23S17_OPTOIN_COUNT] =
 
 uint8_t  _expTxData[16]  __attribute__((aligned(4)));
 uint8_t  _expRxData[16]  __attribute__((aligned(4))); 
+
+
+McpGpioPin::McpGpioPin(unsigned char pin) :
+    BasePin(pin)
+{}
+
+inline void McpGpioPin::pinMode(int8_t mode) {
+    ::MCP23S17SetDirection(this->pin, mode);
+}
+
+inline void McpGpioPin::digitalWrite(int8_t val) {
+    ::MCP23S17SetRelayState(this->pin, val);
+}
+
+inline int McpGpioPin::digitalRead() {
+    return ::MCP23S17GetOptoInState(this->pin);
+}
+
+std::bitset<McpGpioPins> _mcp_gpio_available;
 
 void MCP23S17Setup()
 {
@@ -76,9 +98,12 @@ void MCP23S17InitGPIO()
     }
 
     // Opto inputs.
-    for (uint8_t i = 0; i < MCP23S17_OPTOIN_COUNT; i++)
+    /*for (uint8_t i = 0; i < MCP23S17_OPTOIN_COUNT; i++)
     {
         MCP23S17SetDirection(OPTOIN_PINS[i], INPUT);
+    } */
+    for (unsigned char pin=0; pin < McpGpioPins; ++pin) {
+        _mcp_gpio_available.set(OPTOIN_PINS[pin -1]);
     }
 }
 

@@ -21,9 +21,7 @@ Copyright (C) 2016-2019 by Xose Pérez <xose dot perez at gmail dot com>
 #include "relay.h"
 #include "light.h"
 #include "ws.h"
-#ifdef MCP23S17_SUPPORT
 #include "mcp23s17.h"
-#endif
 
 #include "button_config.h"
 
@@ -621,28 +619,6 @@ void _buttonLoopSonoffDual() {
 
 }
 
-#ifdef MCP23S17_SUPPORT
-void _buttonLoopMcp23s17() {
-
-    for (unsigned int i=0; i<_buttons.size(); i++) {
-        
-        bool buttonState = MCP23S17GetOptoInState(i);
-
-        //filter out any noise by setting a time buffer
-        if ( (millis() - _buttons_lastDebounceTime.at(i)) > _buttons_debounceDelay.at(i)) {
-        
-            //if the button has been pressed, lets toggle the LED from "off to on" or "on to off"
-            if (buttonState) {
-                DEBUG_MSG_P(PSTR("[BUTTON] [MCP23S17] input-: %d\n"), i);
-                buttonEvent(i, button_event_t::Click);
-                _buttons_lastDebounceTime.at(i) = millis();
-            }
-        
-        }//close if(time buffer)
-    }
-}
-#endif
-
 void _buttonLoopGeneric() {
     for (size_t id = 0; id < _buttons.size(); ++id) {
         auto event = _buttons[id].loop();
@@ -654,13 +630,12 @@ void _buttonLoopGeneric() {
 
 void buttonLoop() {
 
-    #if BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_GENERIC
+    #if (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_GENERIC) || \
+        (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_MCP23S17)
         _buttonLoopGeneric();
     #elif (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_ITEAD_SONOFF_DUAL) || \
         (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_FOXEL_LIGHTFOX_DUAL)
         _buttonLoopSonoffDual();
-    #elif BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_MCP23S17
-        _buttonLoopMcp23s17();
     #else
         #warning "Unknown value for BUTTON_EVENTS_SOURCE"
     #endif
@@ -674,9 +649,7 @@ void buttonSetup() {
 
     // Special hardware cases
     #if (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_ITEAD_SONOFF_DUAL) || \
-        (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_FOXEL_LIGHTFOX_DUAL) || \
-        (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_MCP23S17)
-
+        (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_FOXEL_LIGHTFOX_DUAL)
         size_t buttons = 0;
         #if BUTTON1_RELAY != RELAY_NONE
             ++buttons;
@@ -711,11 +684,13 @@ void buttonSetup() {
                 actions,
                 delays
             );
+            
         }
 
     // Generic GPIO input handlers
 
-    #elif BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_GENERIC
+    #elif (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_GENERIC) || \
+        (BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_MCP23S17)
 
         size_t buttons = 0;
 
@@ -772,11 +747,19 @@ void buttonSetup() {
 
             const auto config = _buttonConfig(index);
 
+            #if BUTTON_EVENTS_SOURCE == BUTTON_EVENTS_SOURCE_MCP23S17
+            // TODO: allow to change McpGpioPin to something else based on config?
+            _buttons.emplace_back(
+                std::make_shared<McpGpioPin>(pin), config,
+                relayID, actions, delays
+            );
+            #else
             // TODO: allow to change GpioPin to something else based on config?
             _buttons.emplace_back(
                 std::make_shared<GpioPin>(pin), config,
                 relayID, actions, delays
             );
+            #endif
         }
 
     #endif

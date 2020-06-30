@@ -4721,10 +4721,10 @@
     #define RELAY_PROVIDER          RELAY_PROVIDER_MCP23S17
 
     // Buttons
-    #define BUTTON1_RELAY           1
-    #define BUTTON2_RELAY           2
-    #define BUTTON3_RELAY           2
-    #define BUTTON4_RELAY           1
+    #define BUTTON1_PIN             1
+    #define BUTTON2_PIN             2
+    #define BUTTON3_PIN             3
+    #define BUTTON4_PIN             4
 
     #define BUTTON_EVENTS_SOURCE    BUTTON_EVENTS_SOURCE_MCP23S17
 

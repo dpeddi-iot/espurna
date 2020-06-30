@@ -14,10 +14,23 @@ Copyright (C) 2016-2017 Plamen Kovandjiev <p.kovandiev@kmpelectronics.eu> & Dimi
 #define MCP23S17_H
 
 #include "espurna.h"
+#include "libs/BasePin.h"
 
 #if MCP23S17_SUPPORT
 
 #include <SPI.h>
+
+constexpr const size_t McpGpioPins = MCP23S17_OPTOIN_COUNT +1;
+
+// real hardware pin
+class McpGpioPin final : virtual public BasePin {
+    public:
+        McpGpioPin(unsigned char pin);
+
+        void pinMode(int8_t mode);
+        void digitalWrite(int8_t val);
+        int digitalRead();
+};
 
 // Inputs and outputs count.
 #define MCP23S17_OPTOIN_COUNT 4
