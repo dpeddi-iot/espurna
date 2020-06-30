@@ -250,11 +250,6 @@ button_event_t button_t::loop() {
 
 std::vector<button_t> _buttons;
 
-#ifdef MCP23S17_SUPPORT
-std::vector<unsigned long> _buttons_lastDebounceTime(MCP23S17_OPTOIN_COUNT,0);
-std::vector<unsigned long> _buttons_debounceDelay(MCP23S17_OPTOIN_COUNT,500);
-#endif
-
 // -----------------------------------------------------------------------------
 
 unsigned char buttonCount() {
