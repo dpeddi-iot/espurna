@@ -45,6 +45,8 @@ bool MCP23S17GetPin(uint8_t pinNumber);
 void MCP23S17SetRelayState(uint8_t relayNumber, bool state);
 bool MCP23S17GetOptoInState(uint8_t optoInNumber);
 
+bool mcpGpioValid(unsigned char gpio);
+
 #endif // MCP23S17_SUPPORT == 1
 
 #endif

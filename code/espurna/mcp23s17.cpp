@@ -93,7 +93,7 @@ void MCP23S17InitGPIO()
     // Relays.
     for (uint8_t i = 0; i < DUMMY_RELAY_COUNT; i++)
     {
-        DEBUG_MSG_P(PSTR("[MCP23S17] Initialize GPIO %d\n"), i);
+        DEBUG_MSG_P(PSTR("[MCP23S17] Initialize output GPIO %d\n"), i);
         MCP23S17SetDirection(RELAY_PINS[i], OUTPUT);
     }
 
@@ -102,8 +102,10 @@ void MCP23S17InitGPIO()
     {
         MCP23S17SetDirection(OPTOIN_PINS[i], INPUT);
     } */
+    DEBUG_MSG_P(PSTR("[MCP23S17] Initialize input GPIO\n"));
     for (unsigned char pin=0; pin < McpGpioPins; ++pin) {
-        _mcp_gpio_available.set(OPTOIN_PINS[pin -1]);
+        DEBUG_MSG_P(PSTR("[MCP23S17] Initialize input GPIO %d\n"), pin);
+        _mcp_gpio_available.set((unsigned char) OPTOIN_PINS[pin -1]);
     }
 }
 

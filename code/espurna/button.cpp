@@ -718,9 +718,11 @@ void buttonSetup() {
 
         for (unsigned char index = 0; index < ButtonsMax; ++index) {
             const auto pin = getSetting({"btnGPIO", index}, _buttonPin(index));
+            #if (BUTTON_EVENTS_SOURCE != BUTTON_EVENTS_SOURCE_MCP23S17)
             if (!gpioValid(pin)) {
                 break;
             }
+            #endif
             const auto relayID = getSetting({"btnRelay", index}, _buttonRelay(index));
 
             // TODO: compatibility proxy, fetch global key before indexed
