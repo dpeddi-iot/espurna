@@ -102,10 +102,10 @@ void MCP23S17InitGPIO()
     {
         MCP23S17SetDirection(OPTOIN_PINS[i], INPUT);
     } */
-    DEBUG_MSG_P(PSTR("[MCP23S17] Initialize input GPIO\n"));
+    DEBUG_MSG_P(PSTR("[MCP23S17] Initialize input GPIO %d\n"), McpGpioPins);
     for (unsigned char pin=0; pin < McpGpioPins; ++pin) {
-        DEBUG_MSG_P(PSTR("[MCP23S17] Initialize input GPIO %d\n"), pin);
-        _mcp_gpio_available.set((unsigned char) OPTOIN_PINS[pin -1]);
+        DEBUG_MSG_P(PSTR("[MCP23S17] Initialize input GPIO %d %d\n"), pin, (unsigned char) OPTOIN_PINS[pin]);
+        _mcp_gpio_available.set((unsigned char) OPTOIN_PINS[pin]);
     }
 }
 

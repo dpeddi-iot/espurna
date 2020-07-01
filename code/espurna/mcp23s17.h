@@ -20,7 +20,7 @@ Copyright (C) 2016-2017 Plamen Kovandjiev <p.kovandiev@kmpelectronics.eu> & Dimi
 
 #include <SPI.h>
 
-constexpr const size_t McpGpioPins = MCP23S17_OPTOIN_COUNT +1;
+constexpr const size_t McpGpioPins = MCP23S17_OPTOIN_COUNT;
 
 // real hardware pin
 class McpGpioPin final : virtual public BasePin {
