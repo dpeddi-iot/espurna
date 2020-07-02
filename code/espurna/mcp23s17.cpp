@@ -105,7 +105,7 @@ void MCP23S17InitGPIO()
     DEBUG_MSG_P(PSTR("[MCP23S17] Initialize input GPIO %d\n"), McpGpioPins);
     for (unsigned char pin=0; pin < McpGpioPins; ++pin) {
         DEBUG_MSG_P(PSTR("[MCP23S17] Initialize input GPIO %d %d\n"), pin, (unsigned char) OPTOIN_PINS[pin]);
-        _mcp_gpio_available.set((unsigned char) OPTOIN_PINS[pin]);
+        _mcp_gpio_available.set((unsigned char) pin);
     }
 }
 
@@ -238,15 +238,19 @@ void MCP23S17SetRelayState(uint8_t relayNumber, bool state)
 bool MCP23S17GetOptoInState(uint8_t optoInNumber)
 {
 
-    //DEBUG_MSG_P(PSTR("[MCP23S17] MCP23S17GetOptoInState %d\n"), optoInNumber);
-
+    bool result = false;
     // Check if optoInNumber is out of range - return false.
     if (optoInNumber > MCP23S17_OPTOIN_COUNT - 1)
     {
         return false;
     }
 
-    return !MCP23S17GetPin(OPTOIN_PINS[optoInNumber]);
+    result = !MCP23S17GetPin(optoInNumber);
+
+    //DEBUG_MSG_P(PSTR("[MCP23S17] MCP23S17GetOptoInState %d RC=%d\n"), optoInNumber , (unsigned int) result);
+
+    return result;
+
 } 
 
 #endif // MCP23S17_SUPPORT

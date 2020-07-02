@@ -4721,10 +4721,18 @@
     #define RELAY_PROVIDER          RELAY_PROVIDER_MCP23S17
 
     // Buttons
-    #define BUTTON1_PIN             1
-    #define BUTTON2_PIN             2
-    #define BUTTON3_PIN             3
-    #define BUTTON4_PIN             4
+	#define BUTTON1_CONFIG          BUTTON_PUSHBUTTON
+	#define BUTTON1_CLICK       	BUTTON_MODE_TOGGLE
+	#define BUTTON2_CONFIG          BUTTON_PUSHBUTTON
+	#define BUTTON2_CLICK       	BUTTON_MODE_TOGGLE
+	#define BUTTON3_CONFIG          BUTTON_PUSHBUTTON
+	#define BUTTON3_CLICK       	BUTTON_MODE_TOGGLE
+	#define BUTTON4_CONFIG          BUTTON_PUSHBUTTON
+	#define BUTTON4_CLICK       	BUTTON_MODE_TOGGLE
+    #define BUTTON1_PIN             MCP23S17_IN1PIN
+    #define BUTTON2_PIN             MCP23S17_IN2PIN
+    #define BUTTON3_PIN             MCP23S17_IN3PIN
+    #define BUTTON4_PIN             MCP23S17_IN4PIN
 
     #define BUTTON_EVENTS_SOURCE    BUTTON_EVENTS_SOURCE_MCP23S17
 

@@ -723,7 +723,6 @@ void buttonSetup() {
                 break;
             }
             #else
-            delay(1);
             if (pin > 4) {
                 break;
             }
