@@ -722,6 +722,11 @@ void buttonSetup() {
             if (!gpioValid(pin)) {
                 break;
             }
+            #else
+            delay(1);
+            if (pin > 4) {
+                break;
+            }
             #endif
             const auto relayID = getSetting({"btnRelay", index}, _buttonRelay(index));
 
